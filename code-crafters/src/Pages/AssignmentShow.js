@@ -5,65 +5,30 @@ import Auth from "../components/Auth";
 
 function AssignmentShow() {
   const { id } = useParams();
-  const [query, setquery] = useState("");
+  const [assignment, setassignment] = useState("");
   const [user_id, setuser_id] = useState('')
   const [Loading, setLoading] = useState(false)
 
   const [ValidUser, setValidUser] = useState(false)
   async function auth() {
-  let data = await Auth();
-  console.log('data');
-  console.log(data);
-  if (!data.user_valid) {
-    window.location.href = "/login";
-  } else {
-    setValidUser(true)
+    let data = await Auth();
+    console.log('data');
+    console.log(data);
+    if (!data.user_valid) {
+      window.location.href = "/login";
+    } else {
+      setValidUser(true)
+    }
   }
-}
 
 
-  async function getQuery() {
+  async function getAssignment() {
     const api_data = await fetch(`/api/assignment/${id}`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     });
     const data = await api_data.json();
-    setquery(data);
-  }
-
-
-  async function getUserDetails() {
-    const api_data = await fetch("/api/user-details", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-    });
-    const data = await api_data.json();
-    setuser_id(data._id);
-  }
-
-
-  useEffect(() => {
-    auth();
-    getQuery();
-    getUserDetails();
-  }, []);
-
-
-
-
-  async function handleSubmit(e) {
-    console.log("h");
-    e.preventDefault();
-    const api_data = await fetch(`/api/assignment/submit`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        user_id: user_id,
-        assignment_id: id,
-      }),
-    });
-    const data = await api_data.json();
-    setquery(data);
+    setassignment(data);
   }
 
 
@@ -82,13 +47,35 @@ function AssignmentShow() {
         user_id: data._id,
       }),
     });
+    setuser_id(data._id)
     const status1 = await api_data1.json();
     setStatus(status1);
   }
 
+
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    const api_data = await fetch(`/api/assignment/submit`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        user_id: user_id,
+        assignment_id: id,
+      }),
+    });
+    const data = await api_data.json();
+    setassignment(data);
+  }
+
+
   useEffect(() => {
+    auth();
+    getAssignment();
     getUserDetails();
   }, []);
+
+
 
   return (
     <>
@@ -100,16 +87,16 @@ function AssignmentShow() {
 
         <div className="container mt-12 border rounded-lg p-4">
           <p class="mt-2 font-extrabold leading-tight text-2xl sm:text-3xl">
-            <span className="text-indigo-600">Name: </span> {query.name}
+            <span className="text-indigo-600">Name: </span> {assignment.name}
           </p>
 
           <p class="mt-2 font-extrabold leading-tight text-2xl sm:text-3xl">
-            <span className="text-indigo-600">Topic: </span> {query.topic}
+            <span className="text-indigo-600">Topic: </span> {assignment.topic}
           </p>
           <div className="container ">
             <p className="mt-2 font-bold leading-tight break-words text-xl sm:text-2xl">
               <span className="text-rose-600">Due Date: </span>
-              {new Date(query.due).toLocaleDateString()}
+              {new Date(assignment.due).toLocaleDateString()}
             </p>
 
           </div>

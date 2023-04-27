@@ -37,6 +37,7 @@ function Dashboard() {
         headers: { "Content-Type": "application/json" },
     });
     const data = await api_data.json();
+    console.log(data);
     window.location.href = "/login";
     setLoading(false);
   }
